@@ -15,18 +15,18 @@ final class ClockMock
     /**
      * Used to avoid installing mocks multiple times in case freeze is called multiple times in a row.
      */
-    private static bool $areMocksActive = false;
+    private static $areMocksActive = false;
 
     /**
      * When set, time is currently frozen to this specific date and time.
      */
-    private static ?\DateTimeInterface $frozenDateTime = null;
+    private static  $frozenDateTime = null;
 
     /**
      * When set, holds the original value from $_SERVER['REQUEST_TIME_FLOAT'] so that it can be used to restore it when
      * resetting after a freeze.
      */
-    private static ?float $originalServerRequestTimeFloat = null;
+    private static $originalServerRequestTimeFloat = null;
 
     /**
      * @return mixed Anything the provided `$callable` returns.
@@ -153,7 +153,9 @@ final class ClockMock
             return date($format, $timestamp ?? self::$frozenDateTime->getTimestamp());
         };
 
-        return fn (string $format, ?int $timestamp = null) => $date_mock($format, $timestamp);
+        return function (string $format, ?int $timestamp = null) use ($date_mock) {
+            return $date_mock($format, $timestamp);
+        };
     }
 
     /**
@@ -161,7 +163,9 @@ final class ClockMock
      */
     private static function mock_date_create(): callable
     {
-        return fn (?string $datetime = 'now', ?DateTimeZone $timezone = null) => new \DateTime($datetime, $timezone);
+        return function (?string $datetime = 'now', ?DateTimeZone $timezone = null) {
+            return new \DateTime($datetime, $timezone);
+        };
     }
 
     /**
@@ -198,8 +202,9 @@ final class ClockMock
      */
     private static function mock_date_create_immutable(): callable
     {
-        return fn (?string $datetime = 'now', ?DateTimeZone $timezone = null)
-            => new \DateTimeImmutable($datetime, $timezone);
+        return function (?string $datetime = 'now', ?DateTimeZone $timezone = null) {
+            return new \DateTimeImmutable($datetime, $timezone);
+        };
     }
 
     /**
@@ -224,7 +229,9 @@ final class ClockMock
             return getdate($timestamp ?? self::$frozenDateTime->getTimestamp());
         };
 
-        return fn (?int $timestamp = null) => $getdate_mock($timestamp);
+        return function (?int $timestamp = null) use ($getdate_mock) {
+            return $getdate_mock($timestamp);
+        };
     }
 
     /**
@@ -240,11 +247,13 @@ final class ClockMock
                 'sec'         => self::$frozenDateTime->getTimestamp(),
                 'usec'        => (int) self::$frozenDateTime->format('u'),
                 'minuteswest' => (int) self::$frozenDateTime->format('Z') / -60,
-                'dsttime'     => (int) self::$frozenDateTime->format('I'),
+                'dsttime'     => (int) self::$frozenDateTime->format('I')
             ];
         };
 
-        return fn (bool $as_float = false) => $gettimeofday_mock($as_float);
+        return function (bool $as_float = false) use ($gettimeofday_mock) {
+            return $gettimeofday_mock($as_float);
+        };
     }
 
     /**
@@ -256,7 +265,9 @@ final class ClockMock
             return gmdate($format, $timestamp ?? self::$frozenDateTime->getTimestamp());
         };
 
-        return fn (string $format, ?int $timestamp = null) => $gmdate_mock($format, $timestamp);
+        return function (string $format, ?int $timestamp = null) use ($gmdate_mock) {
+            return $gmdate_mock($format, $timestamp);
+        };
     }
 
     /**
@@ -268,7 +279,9 @@ final class ClockMock
             return gmstrftime($format, $timestamp ?? self::$frozenDateTime->getTimestamp());
         };
 
-        return fn (string $format, ?int $timestamp = null) => $gmstrftime_mock($format, $timestamp);
+        return function (string $format, ?int $timestamp = null) use ($gmstrftime_mock) {
+            return $gmstrftime_mock($format, $timestamp);
+        };
     }
 
     /**
@@ -288,7 +301,9 @@ final class ClockMock
                 $year ?? (int) $gmtDateTime->format('Y'));
         };
 
-        return fn (int $hour, ?int $minute = null, ?int $second = null, ?int $month = null, ?int $day = null, ?int $year = null) => $gmmktime_mock($hour, $minute, $second, $month, $day, $year);
+        return function (int $hour, ?int $minute = null, ?int $second = null, ?int $month = null, ?int $day = null, ?int $year = null) use ($gmmktime_mock) {
+            return $gmmktime_mock($hour, $minute, $second, $month, $day, $year);
+        };
     }
 
     /**
@@ -300,7 +315,9 @@ final class ClockMock
             return idate($format, $timestamp ?? self::$frozenDateTime->getTimestamp());
         };
 
-        return fn (string $format, ?int $timestamp = null) => $idate_mock($format, $timestamp);
+        return function (string $format, ?int $timestamp = null) use ($idate_mock) {
+            return $idate_mock($format, $timestamp);
+        };
     }
 
     /**
@@ -312,7 +329,9 @@ final class ClockMock
             return localtime($timestamp ?? self::$frozenDateTime->getTimestamp(), $associative);
         };
 
-        return fn (?int $timestamp = null, bool $associative = false) => $localtime_mock($timestamp, $associative);
+        return function (?int $timestamp = null, bool $associative = false) use ($localtime_mock) {
+            return $localtime_mock($timestamp, $associative);
+        };
     }
 
     /**
@@ -328,7 +347,9 @@ final class ClockMock
             return self::$frozenDateTime->format('0.u U');
         };
 
-        return fn (bool $as_float = false) => $microtime_mock($as_float);
+        return function (bool $as_float = false) use ($microtime_mock) {
+            return $microtime_mock($as_float);
+        };
     }
 
     /**
@@ -340,7 +361,9 @@ final class ClockMock
             return strftime($format, $timestamp ?? self::$frozenDateTime->getTimestamp());
         };
 
-        return fn (string $format, ?int $timestamp = null) => $strftime_mock($format, $timestamp);
+        return function (string $format, ?int $timestamp = null) use ($strftime_mock) {
+            return $strftime_mock($format, $timestamp);
+        };
     }
 
     /**
@@ -357,7 +380,9 @@ final class ClockMock
                 $year ?? (int) self::$frozenDateTime->format('Y'));
         };
 
-        return fn (int $hour, ?int $minute = null, ?int $second = null, ?int $month = null, ?int $day = null, ?int $year = null) => $mktime_mock($hour, $minute, $second, $month, $day, $year);
+        return function (int $hour, ?int $minute = null, ?int $second = null, ?int $month = null, ?int $day = null, ?int $year = null) use ($mktime_mock) {
+            return $mktime_mock($hour, $minute, $second, $month, $day, $year);
+        };
     }
 
     /**
@@ -369,7 +394,9 @@ final class ClockMock
             return strtotime($datetime, $baseTimestamp ?? self::$frozenDateTime->getTimestamp());
         };
 
-        return fn (string $datetime, ?int $baseTimestamp = null) => $strtotime_mock($datetime, $baseTimestamp);
+        return function (string $datetime, ?int $baseTimestamp = null) use ($strtotime_mock) {
+            return $strtotime_mock($datetime, $baseTimestamp);
+        };
     }
 
     /**
@@ -381,7 +408,9 @@ final class ClockMock
             return self::$frozenDateTime->getTimestamp();
         };
 
-        return fn () => $time_mock();
+        return function () use ($time_mock) {
+            return $time_mock();
+        };
     }
 
     /**
@@ -393,6 +422,8 @@ final class ClockMock
             return unixtojd($timestamp ?? self::$frozenDateTime->getTimestamp());
         };
 
-        return fn (?int $timestamp = null) => $unixtojd_mock($timestamp);
+        return function (?int $timestamp = null) use ($unixtojd_mock) {
+            return $unixtojd_mock($timestamp);
+        };
     }
 }
